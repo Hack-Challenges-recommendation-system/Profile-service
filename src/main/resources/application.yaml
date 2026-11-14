@@ -28,6 +28,8 @@ spring:
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
         # auth-service sends no type headers; each listener names its payload type instead
         spring.json.use.type.headers: false
+        # Topics come from KafkaConfiguration with 3 partitions, never from a subscribing consumer
+        allow.auto.create.topics: false
   flyway:
     enabled: true
     locations: classpath:database/migrations

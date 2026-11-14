@@ -1,5 +1,8 @@
 package team.nofantasy.recommendationsystem.profileservice;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -19,9 +22,11 @@ import org.testcontainers.kafka.KafkaContainer;
 import team.nofantasy.recommendationsystem.profileservice.repository.ProfileRepository;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -96,6 +101,21 @@ class ProfileIntegrationTest {
 
         mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
                 .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Regression: when this service started before auth-service, its consumer used to create the topics with
+     * one partition; auth-service then added partitions the consumer didn't see for minutes, and profiles were lost.
+     */
+    @Test
+    void declaresAccountTopicsWithThreePartitions() throws Exception {
+        try (AdminClient admin = AdminClient.create(Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers()))) {
+            Map<String, TopicDescription> topics = admin.describeTopics(List.of("users.to.create", "users.to.delete"))
+                    .allTopicNames()
+                    .get();
+
+            assertThat(topics.values()).allSatisfy(topic -> assertThat(topic.partitions()).hasSize(3));
+        }
     }
 
     @Test

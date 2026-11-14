@@ -70,6 +70,7 @@ Every commit follows [Conventional Commits](https://www.conventionalcommits.org/
 
 - A profile appears when auth-service publishes `users.to.create` and disappears on `users.to.delete`. A repeated create message is ignored.
 - auth-service sends no type headers, so each Kafka listener names its payload type with `spring.json.value.default.type`.
+- Both services declare `users.to.create` and `users.to.delete` with 3 partitions, and the consumer never creates topics itself. Otherwise a consumer that starts first gets one-partition topics and misses messages in partitions added later.
 - Saving the onboarding answers marks onboarding as completed.
 - Never send a profile to an external API together with the user id. recommendation-service passes only the business fields to the LLM.
 
