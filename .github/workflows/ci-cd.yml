@@ -22,7 +22,7 @@ permissions:
 
 env:
   SERVICE: profile-service
-  IMAGE: ${{ vars.DOCKERHUB_USER }}/recommendation-system-profile-service
+  IMAGE: ${{ vars.DOCKERHUB_USER }}/hackathon-recommendation-system-profile-service
 
 jobs:
   test:
