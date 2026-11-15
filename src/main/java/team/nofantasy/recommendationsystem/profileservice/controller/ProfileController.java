@@ -16,7 +16,7 @@ import java.util.UUID;
  * Profile of the signed-in user. The API gateway puts the user id from the access token into {@code X-User-Id}.
  */
 @RestController
-@RequestMapping("/profiles")
+@RequestMapping("/profile")
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileController {
@@ -28,7 +28,7 @@ public class ProfileController {
     public ProfileControllerDto getMyProfile(@RequestHeader("X-User-Id") UUID userId) {
         log.atInfo()
                 .setMessage("API endpoint is called")
-                .addKeyValue("API endpoint", "GET /profiles/me")
+                .addKeyValue("API endpoint", "GET /profile/me")
                 .addKeyValue("userId", userId)
                 .log();
 
@@ -43,7 +43,7 @@ public class ProfileController {
     ) {
         log.atInfo()
                 .setMessage("API endpoint is called")
-                .addKeyValue("API endpoint", "PUT /profiles/me")
+                .addKeyValue("API endpoint", "PUT /profile/me")
                 .addKeyValue("userId", userId)
                 .log();
 

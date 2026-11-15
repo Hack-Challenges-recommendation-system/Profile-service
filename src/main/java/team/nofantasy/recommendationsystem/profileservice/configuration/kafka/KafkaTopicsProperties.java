@@ -1,4 +1,4 @@
-package team.nofantasy.recommendationsystem.profileservice.config;
+package team.nofantasy.recommendationsystem.profileservice.configuration.kafka;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
