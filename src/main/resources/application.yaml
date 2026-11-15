@@ -1,58 +1,58 @@
 spring:
   application:
-    name: athlete-link-profile-service
+    name: profile-service
   mvc:
     servlet:
       path: /api/v1
   datasource:
-    username: ${POSTGRES_USER:admin}
-    password: ${POSTGRES_PASSWORD:admin}
-    url: ${POSTGRES_DB:jdbc:postgresql://localhost:5436/postgres}
+    url: ${DB_URL:jdbc:postgresql://localhost:5436/postgres}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     open-in-view: false
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: ${spring.application.name}
+      auto-offset-reset: earliest
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.UUIDDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+        # auth-service sends no type headers; each listener names its payload type instead
+        spring.json.use.type.headers: false
+        # Topics come from KafkaConfiguration with 3 partitions, never from a subscribing consumer
+        allow.auto.create.topics: false
   flyway:
     enabled: true
-    locations: classpath:database/migration
-  data:
-    web:
-      pageable:
-        max-page-size: 20
+    locations: classpath:database/migrations
 
 app:
   kafka:
     topics:
       users-to-create: users.to.create
-      users-to-update: users.to.update
       users-to-delete: users.to.delete
-      friends-changes: friends.changes
-      profile-updates: profile.updates
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger
+    operations-sorter: method
+    tags-sorter: alpha
 
 logging:
   level:
     root: INFO
   file:
-    name: /logs/athletelink-profile-service.log
+    name: /logs/profile-service.log
   structured:
     format:
       file: ecs # Loki supports it
