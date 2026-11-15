@@ -31,8 +31,8 @@ The stage and experience values are a first guess. Align them with the case data
 
 | Method and path | Caller | What it does |
 |---|---|---|
-| `GET /profiles/me` | signed in | The profile; 404 until the create event has arrived |
-| `PUT /profiles/me` | signed in | Saves every field above except `onboardingCompleted` and `updatedAt` |
+| `GET /profile/me` | signed in | The profile; 404 until the create event has arrived |
+| `PUT /profile/me` | signed in | Saves every field above except `onboardingCompleted` and `updatedAt` |
 | `GET /health` | anyone | 200 |
 
 ## Configuration

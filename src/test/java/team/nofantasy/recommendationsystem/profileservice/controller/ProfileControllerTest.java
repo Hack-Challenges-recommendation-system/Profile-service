@@ -46,7 +46,7 @@ class ProfileControllerTest {
                 userId, "founder", Profile.BusinessStage.IDEA, null, Profile.Experience.NONE, null, List.of(), false, Instant.now()
         ));
 
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
                 .andExpect(jsonPath("$.businessStage").value("IDEA"))
@@ -55,7 +55,7 @@ class ProfileControllerTest {
 
     @Test
     void requiresUserIdFromGateway() throws Exception {
-        mockMvc.perform(api(get("/api/v1/profiles/me")))
+        mockMvc.perform(api(get("/api/v1/profile/me")))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(profileService);
@@ -66,7 +66,7 @@ class ProfileControllerTest {
         UUID userId = UUID.randomUUID();
         when(profileService.getProfile(userId)).thenThrow(new EntityNotFoundException("missing"));
 
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", userId))
                 .andExpect(status().isNotFound());
     }
 
@@ -78,7 +78,7 @@ class ProfileControllerTest {
                 "find first customers", List.of("VIDEO"), true, Instant.now()
         ));
 
-        mockMvc.perform(api(put("/api/v1/profiles/me"))
+        mockMvc.perform(api(put("/api/v1/profile/me"))
                         .header("X-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -96,7 +96,7 @@ class ProfileControllerTest {
 
     @Test
     void updateValidatesAnswers() throws Exception {
-        mockMvc.perform(api(put("/api/v1/profiles/me"))
+        mockMvc.perform(api(put("/api/v1/profile/me"))
                         .header("X-User-Id", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -111,7 +111,7 @@ class ProfileControllerTest {
 
     @Test
     void updateRejectsUnknownStage() throws Exception {
-        mockMvc.perform(api(put("/api/v1/profiles/me"))
+        mockMvc.perform(api(put("/api/v1/profile/me"))
                         .header("X-User-Id", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

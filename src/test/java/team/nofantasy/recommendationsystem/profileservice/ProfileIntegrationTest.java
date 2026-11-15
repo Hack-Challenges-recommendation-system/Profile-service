@@ -73,13 +73,13 @@ class ProfileIntegrationTest {
                 """.formatted(userId));
         await().atMost(Duration.ofSeconds(30)).until(() -> profileRepository.existsById(userId));
 
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("founder"))
                 .andExpect(jsonPath("$.onboardingCompleted").value(false))
                 .andExpect(jsonPath("$.preferredFormats.length()").value(0));
 
-        mockMvc.perform(api(put("/api/v1/profiles/me"))
+        mockMvc.perform(api(put("/api/v1/profile/me"))
                         .header("X-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -88,7 +88,7 @@ class ProfileIntegrationTest {
                                 """))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.businessStage").value("LAUNCH"))
                 .andExpect(jsonPath("$.preferredFormats[1]").value("ARTICLE"))
@@ -99,7 +99,7 @@ class ProfileIntegrationTest {
                 """.formatted(userId));
         await().atMost(Duration.ofSeconds(30)).until(() -> !profileRepository.existsById(userId));
 
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", userId))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", userId))
                 .andExpect(status().isNotFound());
     }
 
@@ -120,7 +120,7 @@ class ProfileIntegrationTest {
 
     @Test
     void unknownUserHasNoProfile() throws Exception {
-        mockMvc.perform(api(get("/api/v1/profiles/me")).header("X-User-Id", UUID.randomUUID()))
+        mockMvc.perform(api(get("/api/v1/profile/me")).header("X-User-Id", UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
 }
